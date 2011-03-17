@@ -1,0 +1,562 @@
+/*
+ *  roflkode.jj
+ *
+ *  JavaCC specification for ROFLKODE.
+ */
+
+options {
+  UNICODE_INPUT = true;
+  STATIC = false;
+}
+
+PARSER_BEGIN(Parser)
+
+package edu.lmu.cs.xlg.roflkode.syntax;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.io.Reader;
+import edu.lmu.cs.xlg.util.Log;
+import edu.lmu.cs.xlg.roflkode.entities.*;
+
+public class Parser {
+
+    /**
+     * Returns the result of parsing the ROFLKODE program on the given Reader.
+     */
+    public Script parse(Reader reader, Log log) {
+        try {
+            return parseScript();
+        } catch (TokenMgrError e) {
+            log.exception(e);
+            return null;
+        } catch (ParseException e) {
+            log.exception(e);
+            return null;
+        }
+    }
+}
+
+PARSER_END(Parser)
+
+SKIP: {
+    " " | "\t" | <"BTW" (~["\n","\r"])*>
+}
+
+TOKEN: {
+    "HAI" | "KTHXBYE" | "CAN" | "HAS" | "I" | "A" | "R" | "AN" | "YO" | "UR"
+    | "UV" | "AKA" | "BRB" | "WIF" | "TEH" | "KAR" | "INT" | "ITZ" | "HWGA"
+    | "DIAF" | "MAEK" | "B00L" | "THEM" | "YARN" | "GTFO" | "NUMBR" | "SRSLY"
+    | "HEREZ" | "GIMMEH" | "PWNZOR" | "BUKKIT" | "UPZORZ" | "FACEPALM"
+    | "NERFZORZ" | "IF" | "CEPT" | "TIL" | "WHIEL" | "NO" | "OIC" | "WTF"
+    | "OMG" | "WAI" | "WERD" | "MEBBE" | "OMGWTF" | "O" | "IM" | "IN" | "TO"
+    | "UP" | "OR" | "AS" | "BY" | "WIN" | "THX" | "PLZ" | "N00B" | "NERF"
+    | "FAIL" | "FROM" | "SAEM" | "NOES" | "PWNS" | "THRU" | "MKAY"
+    | "OUTTA" | "PWNED" | "AWSUM" | "UPPIN" | "NERFIN" | "DIVIDZ" | "BITZLEFT"
+    | "BITZRIGHT" | "TIEMZ" | "OVR" | "LEFTOVR" | "NAA" | "BITZFLIP" | "SIEZ"
+    | "B00LZOR" | "INTZOR" | "NUMZOR" | "KARZOR" | "YARNZOR" | "BITOR" | "BITAND"
+    | "BITXOR" | "ORELSE" | "ANALSO"
+|
+    "?" | "!!" | "!!!" | "~~" | "<:" | ":>" | "[:" | ":]" | "(:" | ":)"
+|
+    < BR: "," | "\n" | "\r" | "\u0085" | "\u2028" | "\u2029" >
+|
+    < INTLIT: ("-")? (["0"-"9"])+ >
+|
+    < NUMLIT: ("-")? (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? >
+|
+    < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+|
+    < CHARLIT:
+        "'"
+        (
+            ~["'", ":" ,"\u0000"-"\u001f", "\u007f"-"\u009f"]
+        |
+            ":" ( [")", ">", ":", "'", "\""] | <UNICODE_SPEC> )
+        )
+        "'"
+    >
+|
+    < STRINGLIT:
+        "\""
+        (
+            ~["'", ":" ,"\u0000"-"\u001f", "\u007f"-"\u009f"]
+        |
+            ":" ( [")", ">", ":", "'", "\""] | <UNICODE_SPEC> )
+        )*
+        "\""
+    >
+|
+    < #UNICODE_SPEC:
+        "(" (<HEX>)(<HEX>)?(<HEX>)?(<HEX>)?(<HEX>)?(<HEX>)? ")"
+    >
+|
+    < #HEX: ["0"-"9", "A"-"F", "a"-"f"] >
+|
+    < ID: <LETTER> (<LETTER>|<DIGIT>)* >
+|
+    < #LETTER: [
+        "\u0041"-"\u005a", "\u0061"-"\u007a", "\u00aa", "\u00b5", "\u00ba", "\u00c0"-"\u00d6",
+        "\u00d8"-"\u00f6", "\u00f8"-"\u1fff", "\u3040"-"\u318f", "\u3300"-"\u337f",
+        "\u3400"-"\u3d2d", "\u4e00"-"\u9fff", "\uf900"-"\ufaff", "\ufb00"-"\ufb06",
+        "\ufb13"-"\ufb17", "\ufb1f"-"\ufb28", "\ufb2a"-"\ufb36", "\ufb38"-"\ufb3e",
+        "\ufb40"-"\ufb41", "\ufb43"-"\ufb44", "\ufb46"-"\ufb4f", "\ufb50"-"\ufdd7",
+        "\ufdf0"-"\ufdfd", "\ufe70"-"\ufefc", "\uff1f"-"\uff3a", "\uff3f"-"\uff5e",
+        "\uff61"-"\uffbe", "\uffc2"-"\uffc7", "\uffca"-"\uffcf", "\uffd2"-"\uffd7",
+        "\uffda"-"\uffdc"
+    ] >
+|
+    < #DIGIT: [
+        "\u0030"-"\u0039", "\u0660"-"\u0669", "\u06f0"-"\u06f9", "\u0966"-"\u096f",
+        "\u09e6"-"\u09ef", "\u0a66"-"\u0a6f", "\u0ae6"-"\u0aef", "\u0b66"-"\u0b6f",
+        "\u0be7"-"\u0bef", "\u0c66"-"\u0c6f", "\u0ce6"-"\u0cef", "\u0d66"-"\u0d6f",
+        "\u0e50"-"\u0e59", "\u0ed0"-"\u0ed9", "\u1040"-"\u1049"
+    ] >
+}
+
+Script parseScript(): {
+    List<Statement> statements = new ArrayList<Statement>();
+    Statement s;
+}{
+    (<BR>)*
+    "HAI"
+    (<BR>)+
+    (parseImport())*
+    (s = parseStmt() {statements.add(s);})+
+    "KTHXBYE"
+    (<BR>)*
+    <EOF>
+    {return new Script(statements);}
+}
+
+void parseImport(): {
+}{
+    "CAN" "HAS" <ID> "?" (<BR>)+
+}
+
+Statement parseStmt(): {
+    Statement s;
+}{
+    (
+        parseDec() {s = null; /* TODO */}
+    |
+        LOOKAHEAD ("PLZ" | "IM" | parseExp() ("?" | "WTF")) parseComplexStmt()
+        {s = null; /* TODO */}
+    |
+        s = parseSimpleStmt()
+        (parseModifier())?   /* TODO */
+    )
+    (<BR>)+
+    {return s;}
+}
+
+void parseDec(): {
+}{
+    LOOKAHEAD(2) parseVardec()
+    |
+    parseFundec()
+    |
+    parseTypedec()
+}
+
+void parseVardec(): {
+}{
+    "I" "HAS" "A" parseType() <ID>
+    ("ITZ" ("4EVER")? parseExp())?
+}
+
+void parseType(): {
+}{
+    "B00L" | "KAR" | "INT" | "NUMBR" | "YARN" | <ID>
+}
+
+void parseTypedec(): {
+}{
+    "TEH" "BUKKIT" "UV" (<BR>)*
+    (parseType() <ID> (<BR>)*)*
+    "AKA" <ID>
+}
+
+void parseFundec(): {
+}{
+    "I" "CAN" ("MAEK" parseType())?
+    <ID> (parseParams())? (<BR>)+ (parseStmt())+
+    "SRSLY"
+    |
+    "THEM" "CAN" ("MAEK" parseType())? <ID> (parseParams())?
+}
+
+void parseParams(): {
+}{
+    ("WIF")? "UR" parseType() <ID>
+    ("AN" parseType() <ID>)*
+}
+
+Statement parseSimpleStmt(): {
+    List<Expression> expressions = new ArrayList<Expression>();
+    Expression e;
+    VariableExpression v;
+    Token t;
+}{
+    "YO" (e = parseExp()  {expressions.add(e);})+
+    {return new YoStatement(expressions);}
+    |
+    "FACEPALM" (e = parseExp()  {expressions.add(e);})+
+    {return new FacepalmStatement(expressions);}
+    |
+    "PWNZOR" v = parseVar()
+    {return new PwnzorStatement(v);}
+    |
+    "UPZORZ" v = parseVar()
+    {return new UpzorzStatement(v);}
+    |
+    "NERFZORZ" v = parseVar()
+    {return new NerfzorzStatement(v);}
+    |
+    "GTFO" (t = <ID>)? {return /* TODO */ null;}
+    |
+    "HWGA" (<ID>)? {return /* TODO */ null;}
+    |
+    "HEREZ" "UR" parseExp() {return /* TODO */ null;}
+    |
+    "DIAF" (parseExp())? {return /* TODO */ null;}
+    |
+    "GIMMEH" (<ID>)+ {return /* TODO */ null;}
+    |
+    "BRB" (parseExp()) {return /* TODO */ null;}
+    |
+    LOOKAHEAD (parseVar() "R") v = parseVar() "R" e = parseExp()
+    {return new AssignmentStatement(v, e);}
+    |
+    t = <ID> expressions = parseArgs()
+    {return new CallStatement(t.image, expressions);}
+}
+
+void parseModifier(): {
+}{
+    (
+        "IF"
+    |
+        "CEPT" "IF"
+    |
+        "WHIEL"
+    |
+        "TIL"
+    )
+    parseExp()
+}
+
+void parseComplexStmt(): {
+}{
+    LOOKAHEAD(parseExp() "?") parseConditional()
+    |
+    parseSwitch()
+    |
+    parseLoop()
+    |
+    parseTry()
+}
+
+void parseConditional(): {
+}{
+    parseExp() "?" (<BR>)+
+    "WERD" (<BR>)+ (parseStmt())+
+    (
+        "MEBBE" parseExp() (<BR>)*
+        (parseStmt())+
+    )*
+    (
+        "NO" "WAI" (<BR>)*
+        (parseStmt())+
+    )?
+    "OIC"
+}
+
+void parseSwitch(): {
+}{
+    parseExp() "WTF" "?" (<BR>)+
+    (
+        "OMG" parseLiteral() (<BR>)+ (parseStmt())+
+    )+
+    "OMGWTF" (<BR>)+
+    (parseStmt())+
+    "OIC"
+}
+
+void parseLoop(): {
+}{
+    parseLoopStart() (<BR>)*
+    parseLoopControl() (<BR>)+
+    (LOOKAHEAD(2) parseStmt())+
+    parseLoopEnd()
+}
+
+void parseLoopStart(): {
+}{
+    "IM" "IN" "UR" <ID>
+}
+
+void parseLoopControl(): {
+}{
+    ("WHIEL" | "TIL") parseExp()
+    |
+    ("UPPIN" | "NERFIN")
+    <ID>
+    (
+        "FROM" parseExp() "TO" parseExp()
+    |
+        "THRU" parseExp()
+    )
+}
+
+void parseLoopEnd(): {
+}{
+    "IM" "OUTTA" "UR" <ID>
+}
+
+void parseTry(): {
+}{
+    "PLZ" parseSimpleStmt()
+    (<BR>)+
+    "AWSUM" "THX" (<BR>)+
+    (parseStmt())+
+    "O" "NOES" (<BR>)+
+    (parseStmt())+
+    "MKAY"
+}
+
+Expression parseExp(): {
+    Expression e1;
+    Expression e2;
+}{
+    e1 = parseExp1()
+    ("ORELSE" e2 = parseExp1() {e1 = new BinaryExpression(e1, "ORELSE", e2);})*
+    {return e1;}
+}
+
+Expression parseExp1(): {
+    Expression e1;
+    Expression e2;
+}{
+    e1 = parseExp2()
+    ("ANALSO" e2 = parseExp2() {e1 = new BinaryExpression(e1, "ANALSO", e2);})*
+    {return e1;}
+}
+
+Expression parseExp2(): {
+    Expression e1;
+    Expression e2;
+}{
+    e1 = parseExp3()
+    ("BITOR" e2 = parseExp3() {e1 = new BinaryExpression(e1, "BITOR", e2);})*
+    {return e1;}
+}
+
+Expression parseExp3(): {
+    Expression e1;
+    Expression e2;
+}{
+    e1 = parseExp4()
+    ("BITXOR" e2 = parseExp4() {e1 = new BinaryExpression(e1, "BITXOR", e2);})*
+    {return e1;}
+}
+
+Expression parseExp4(): {
+    Expression e1;
+    Expression e2;
+}{
+    e1 = parseExp5()
+    ("BITAND" e2 = parseExp5() {e1 = new BinaryExpression(e1, "BITAND", e2);})*
+    {return e1;}
+}
+
+Expression parseExp5(): {
+    String op;
+    Expression e1;
+    Expression e2;
+}{
+    e1 = parseExp6()
+    (
+        op = parseRelop()
+        e2 = parseExp6()
+        {e1 = new BinaryExpression(e1, op, e2);}
+    )?
+    {return e1;}
+}
+
+Expression parseExp6(): {
+    String op;
+    Expression e1;
+    Expression e2;
+}{
+    e1 = parseExp7()
+    (
+        op = parseShiftop()
+        e2 = parseExp7()
+        {e1 = new BinaryExpression(e1, op, e2);}
+    )*
+    {return e1;}
+}
+
+
+Expression parseExp7(): {
+    String op;
+    Expression e1;
+    Expression e2;
+}{
+    e1 = parseExp8()
+    (
+        op = parseAddop()
+        e2 = parseExp8()
+        {e1 = new BinaryExpression(e1, op, e2);}
+    )*
+    {return e1;}
+}
+
+Expression parseExp8(): {
+    String op;
+    Expression e1;
+    Expression e2;
+}{
+    e1 = parseExp9()
+    (
+        op = parseMulop()
+        e2 = parseExp9()
+        {e1 = new BinaryExpression(e1, op, e2);}
+    )*
+    {return e1;}
+}
+
+
+Expression parseExp9(): {
+    String op = null;
+    Expression e;
+}{
+    (op = parsePrefixop())? e = parseExp10()
+    {return op == null ? e : new UnaryExpression(op, e);}
+}
+
+Expression parseExp10(): {
+    Expression e;
+    List<Expression> list = new ArrayList<Expression>();
+    Token t;
+}{
+    e = parseLiteral() {return e;}
+|
+    LOOKAHEAD(2) t = <ID> "<:" (e = parseExp()  {list.add(e);})* ":>"
+    {return new BukkitExpression(t.image, list);}
+|
+    e = parseVar() {return e;}
+|
+    "[:" (e = parseExp()  {list.add(e);})* ":]"
+    {return new ArrayExpression(list);}
+|
+    "(" e = parseExp() ")" {return e;}
+}
+
+Literal parseLiteral(): {
+    Token t;
+}{
+    "N00B" {return NoobLiteral.INSTANCE;}
+|
+    "WIN" {return BooleanLiteral.WIN;}
+|
+    "FAIL" {return BooleanLiteral.FAIL;}
+|
+    t = <INTLIT> {return new IntegerLiteral(t.image);}
+|
+    t = <NUMLIT> {return new NumberLiteral(t.image);}
+|
+    t = <CHARLIT> {return new KarLiteral(t.image);}
+|
+    t = <STRINGLIT> {return new StringLiteral(t.image);}
+}
+
+VariableExpression parseVar(): {
+    VariableExpression v;
+    List<Expression> arguments = new ArrayList<Expression>();
+    Expression e;
+    Token t;
+    Token p;
+}{
+    t = <ID>
+    (arguments = parseArgs())?
+    {
+        if (arguments.isEmpty()) {
+            v = new SimpleVariableReference(t.image);
+        } else {
+            v = new CallExpression(t.image, arguments);
+        }
+   }
+    (
+        "!!" e = parseExp() "!!"
+        {v = new ArraySlot(v, e);}
+    |
+        "!!!" p = <ID>
+        {v = new BukkitSlot(v, p.image);}
+    )*
+    {return v;}
+}
+
+List<Expression> parseArgs(): {
+    List<Expression> arguments = new ArrayList<Expression>();
+    Expression e;
+}{
+    "(:" (e = parseExp()  {arguments.add(e);})* ":)"
+    {return arguments;}
+}
+
+String parseRelop(): {
+}{
+    LOOKAHEAD(2) "PWNS" "OR" "SAEM" "AS" {return ">=";}
+    |
+    "PWNS" {return ">";}
+    |
+    LOOKAHEAD(3) "PWNED" "BY" "OR" "SAEM" "AS" {return "<=";}
+    |
+    "PWNED" "BY" {return "<";}
+    |
+    "SAEM" "AS" {return "==";}
+    |
+    "DIVIDZ" {return "\\";}
+}
+
+String parseShiftop(): {
+    Token t;
+}{
+    (t = "BITZLEFT" | t = "BITZRIGHT")
+    {return t.image;}
+}
+
+String parseAddop(): {
+    Token t;
+}{
+    t = "UP" {return "+";}
+|
+    t = "NERF" {return "-";}
+|
+    t = "~~" {return "~~";}
+}
+
+String parseMulop(): {
+    Token t;
+}{
+    (t = "TIEMZ" | t = "OVR" | t = "LEFTOVR")
+    {return t.image;}
+}
+
+String parsePrefixop(): {
+    Token t;
+}{
+    (
+        t = "NAA"
+    |   t = "BITZFLIP"
+    |   t = "SIEZ" "UV"
+    |   t = "B00LZOR"
+    |   t = "INTZOR"
+    |   t = "NUMZOR"
+    |   t = "KARZOR"
+    |   t = "YARNZOR"
+    )
+    {return t.image;}
+}
