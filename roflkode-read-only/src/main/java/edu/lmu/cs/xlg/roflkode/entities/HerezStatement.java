@@ -3,7 +3,6 @@
  */
 package edu.lmu.cs.xlg.roflkode.entities;
 
-import java.util.List;
 
 /**
  * @author Allison
@@ -11,7 +10,7 @@ import java.util.List;
  * 
  */
 public class HerezStatement extends Statement {
-	private Expression expressions; //
+	private Expression expressions; //private variable for expression
 
 	public HerezStatement(Expression expressions) {
 		this.expressions = expressions;
