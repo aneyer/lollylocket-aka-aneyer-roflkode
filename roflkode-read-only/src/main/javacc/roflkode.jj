@@ -222,7 +222,8 @@ Statement parseSimpleStmt(): {
     |
     "DIAF" (parseExp())? {return /* TODO */ null;}
     |
-    "GIMMEH" (<ID>)+ {return /* TODO */ null;}
+    "GIMMEH" (v= parseVar()) 
+    {return new GimmehStatement(v);}
     |
     "BRB" (e = parseExp()) 
     {return new BrbStatement(e);}
