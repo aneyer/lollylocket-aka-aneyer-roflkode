@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.lmu.cs.xlg.roflkode.entities;
 
 /**
