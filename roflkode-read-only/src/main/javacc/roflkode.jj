@@ -218,13 +218,14 @@ Statement parseSimpleStmt(): {
     "HWGA" (<ID>)? {return /* TODO */ null;}
     |
     "HEREZ" "UR" e = parseExp()
-    {return new HerezStatmenet(e);}
+    {return new HerezStatement(e);}
     |
     "DIAF" (parseExp())? {return /* TODO */ null;}
     |
     "GIMMEH" (<ID>)+ {return /* TODO */ null;}
     |
-    "BRB" (parseExp()) {return /* TODO */ null;}
+    "BRB" (e = parseExp()) 
+    {return new BrbStatement(e);}
     |
     LOOKAHEAD (parseVar() "R") v = parseVar() "R" e = parseExp()
     {return new AssignmentStatement(v, e);}
