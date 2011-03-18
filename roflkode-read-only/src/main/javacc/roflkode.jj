@@ -213,14 +213,17 @@ Statement parseSimpleStmt(): {
     "NERFZORZ" v = parseVar()
     {return new NerfzorzStatement(v);}
     |
-    "GTFO" (t = <ID>)? {return /* TODO */ null;}
+    "GTFO" (v = parseVar() {return new GtfoStatement(v);} )? 
+    {return new GtfoStatement();}
     |
-    "HWGA" (<ID>)? {return /* TODO */ null;}
+    "HWGA" (v = parseVar() {return new HwgaStatement(v);} )? 
+    {return new HwgaStatement();}
     |
     "HEREZ" "UR" e = parseExp()
     {return new HerezStatement(e);}
     |
-    "DIAF" (parseExp())? {return /* TODO */ null;}
+    "DIAF" (e = parseExp() {return new DiafStatement(e);} )?
+    {return new DiafStatement();}
     |
     "GIMMEH" (v= parseVar()) 
     {return new GimmehStatement(v);}
