@@ -1,23 +1,18 @@
 package edu.lmu.cs.xlg.roflkode.entities;
 
 /**
- * @author Allison
- * Brb Statement class
- *
+ * A Roflkode BRB statement.
  */
 public class BrbStatement extends Statement {
-	private Expression expressions; //private variable for expression
 
-	/**
-	 * BrbStatement constructor 
-	 * @param expressions
-	 */
-	public BrbStatement(Expression expressions) {
-		this.expressions = expressions;
-	}
+    private Expression expression;
 
-	public Expression getExpressions() {
-		return expressions;
-	}
+    public BrbStatement(Expression expression) {
+        this.expression = expression;
+    }
 
+    public Expression getExpression() {
+        return expression;
+    }
 }
+

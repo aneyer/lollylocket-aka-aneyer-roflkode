@@ -1,29 +1,21 @@
-/**
- * 
- */
 package edu.lmu.cs.xlg.roflkode.entities;
 
 /**
- * @author Allison
- * 
+ * Class for the Gimmeh statement in roflkode, which reads
+ * from standard input.
  */
 public class GimmehStatement extends Statement {
 
-	private VariableExpression expressions; // private variable expression since
-											// it takes in an ID
+    private String input;
 
-	/**
-	 * @param expressions
-	 */
-	public GimmehStatement(VariableExpression expressions) {
-		this.expressions = expressions;
+    /**
+     * This is a comment...for the constructor. Tee hee. :-) <(-_-)>
+     */
+    public GimmehStatement(String input) {
+        this.input = input;
+    }
+
+	public String getInput() {
+		return input;
 	}
-
-	/**
-	 * @return the expressions
-	 */
-	public VariableExpression getExpressions() {
-		return expressions;
-	}
-
 }

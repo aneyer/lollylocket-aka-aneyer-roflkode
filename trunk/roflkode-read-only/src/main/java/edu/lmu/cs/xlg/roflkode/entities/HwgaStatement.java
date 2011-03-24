@@ -2,16 +2,16 @@ package edu.lmu.cs.xlg.roflkode.entities;
 
 public class HwgaStatement extends Statement {
 
-	private VariableExpression loopName;
+	private String loopName;
 	
 	public HwgaStatement() {
 	}
 
-	public HwgaStatement(VariableExpression loopName) {
+	public HwgaStatement(String loopName) {
 		this.loopName = loopName;
 	}
 
-	public VariableExpression getLoopName() {
+	public String getLoopName() {
 		return loopName;
 	}
 	
