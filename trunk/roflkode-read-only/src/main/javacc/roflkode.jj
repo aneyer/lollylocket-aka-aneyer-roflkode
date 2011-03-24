@@ -136,60 +136,99 @@ void parseImport(): {
 
 Statement parseStmt(): {
     Statement s;
+    Declarable d;
+    ModifierExpression e;
 }{
     (
-        parseDec() {s = null; /* TODO */}
+        d=parseDec() {s = new DeclarationStatement(d);}
     |
-        LOOKAHEAD ("PLZ" | "IM" | parseExp() ("?" | "WTF")) parseComplexStmt()
-        {s = null; /* TODO */}
+        LOOKAHEAD ("PLZ" | "IM" | parseExp() ("?" | "WTF")) s=parseComplexStmt()
     |
         s = parseSimpleStmt()
-        (parseModifier())?   /* TODO */
+        (e=parseModifier() {s = new ModifiedStatement(s, e);}  )?
     )
     (<BR>)+
     {return s;}
 }
 
-void parseDec(): {
+Declarable parseDec(): {
+  Declarable d;
 }{
-    LOOKAHEAD(2) parseVardec()
+    (
+    LOOKAHEAD(2) d=parseVardec()
     |
-    parseFundec()
+    d=parseFundec()
     |
-    parseTypedec()
+    d=parseTypedec()
+    )
+    {return d;}
 }
 
-void parseVardec(): {
+Variable parseVardec(): {
+  Type t;
+  Token name;
+  Expression e;
 }{
-    "I" "HAS" "A" parseType() <ID>
-    ("ITZ" ("4EVER")? parseExp())?
+    ("I" "HAS" "A" t=parseType() name=<ID>
+    ("ITZ" ("4EVER")? e=parseExp()
+    {return new Variable(name.image, t, e);} )? 
+    {return new Variable(name.image, t);})
 }
 
-void parseType(): {
+Type parseType(): {
+  Token name;
 }{
-    "B00L" | "KAR" | "INT" | "NUMBR" | "YARN" | <ID>
+   ( name="B00L" | name="KAR" | name="INT" | name="NUMBR" | name="YARN" | name=<ID>)
+   {return new Type(name.image);}
 }
 
-void parseTypedec(): {
+Type parseTypedec(): {
+  Token name;
 }{
     "TEH" "BUKKIT" "UV" (<BR>)*
     (parseType() <ID> (<BR>)*)*
-    "AKA" <ID>
+    "AKA" name=<ID>
+    {return new Type(name.image);}
 }
 
-void parseFundec(): {
+Block parseBlock(): {
+    List<Statement> statements = new ArrayList<Statement>();
+    Statement s;
 }{
-    "I" "CAN" ("MAEK" parseType())?
-    <ID> (parseParams())? (<BR>)+ (parseStmt())+
-    "SRSLY"
+    (LOOKAHEAD(2) s = parseStmt() {statements.add(s);} )*
+    {return new Block(statements);}
+}
+
+Function parseFundec(): {
+  Block b;
+  Type t;
+  Token name;
+  Type returnType = new Type("void");
+  List<Variable> p = new ArrayList<Variable>();
+  Function f;
+}{
+    (
+    ("I" "CAN" ("MAEK" returnType=parseType())?
+    name=<ID> (p=parseParams())? (<BR>)+ b=parseBlock()
+    "SRSLY" 
+    {f = new Function(returnType.getName(), name.image, p, b);})
     |
-    "THEM" "CAN" ("MAEK" parseType())? <ID> (parseParams())?
+    ("THEM" "CAN" ("MAEK" returnType=parseType())? name=<ID> (p=parseParams())?
+    {f = new Function(returnType.getName(), name.image, p);})
+    )
+    {return f;}
 }
 
-void parseParams(): {
+List<Variable> parseParams(): {
+  List<Variable> parameters = new ArrayList<Variable>();
+  Type t;
+  Token name;
 }{
-    ("WIF")? "UR" parseType() <ID>
-    ("AN" parseType() <ID>)*
+    ("WIF")? "UR" t=parseType() name=<ID>
+    {parameters.add(new Variable(name.image, t));}
+    ("AN" t=parseType() name=<ID> 
+    {parameters.add(new Variable(name.image, t));})*
+    {return parameters;}
 }
 
 Statement parseSimpleStmt(): {
@@ -216,19 +255,19 @@ Statement parseSimpleStmt(): {
     "GTFO" (v = parseVar() {return new GtfoStatement(v);} )? 
     {return new GtfoStatement();}
     |
-    "HWGA" (v = parseVar() {return new HwgaStatement(v);} )? 
+    "HWGA" (t=<ID> {return new HwgaStatement(t.image);} )? 
     {return new HwgaStatement();}
     |
-    "HEREZ" "UR" e = parseExp()
-    {return new HerezStatement(e);}
+    "HEREZ" "UR" e=parseExp()
+     {return new HerezStatement (e);}
     |
-    "DIAF" (e = parseExp() {return new DiafStatement(e);} )?
+    "DIAF" (e = parseExp() {return new DiafStatement(e);} )? 
     {return new DiafStatement();}
     |
-    "GIMMEH" (v= parseVar()) 
-    {return new GimmehStatement(v);}
+    "GIMMEH" t=<ID>
+    {return new GimmehStatement(t.image);}
     |
-    "BRB" (e = parseExp()) 
+    "BRB" e = parseExp() 
     {return new BrbStatement(e);}
     |
     LOOKAHEAD (parseVar() "R") v = parseVar() "R" e = parseExp()
@@ -238,97 +277,145 @@ Statement parseSimpleStmt(): {
     {return new CallStatement(t.image, expressions);}
 }
 
-void parseModifier(): {
+ModifierExpression parseModifier(): {
+    String s;
+    Expression e;
 }{
     (
-        "IF"
+        "IF" {s = "IF";}
     |
-        "CEPT" "IF"
+        "CEPT" "IF" {s = "CEPT IF";}
     |
-        "WHIEL"
+        "WHIEL" {s = "WHIEL";}
     |
-        "TIL"
+        "TIL" {s = "TIL";}
     )
-    parseExp()
+    e=parseExp()
+    {return new ModifierExpression(e, s);} 
 }
 
-void parseComplexStmt(): {
+Statement parseComplexStmt(): {
+    Statement s;
 }{
-    LOOKAHEAD(parseExp() "?") parseConditional()
-    |
-    parseSwitch()
-    |
-    parseLoop()
-    |
-    parseTry()
-}
-
-void parseConditional(): {
-}{
-    parseExp() "?" (<BR>)+
-    "WERD" (<BR>)+ (parseStmt())+
     (
-        "MEBBE" parseExp() (<BR>)*
-        (parseStmt())+
+    LOOKAHEAD(parseExp() "?") s=parseConditional()
+    |
+    s=parseSwitch()
+    |
+    s=parseLoop()
+    |
+    s=parseTry()
+    )
+    {return s;}
+}
+
+Statement parseConditional(): {
+  List<ConditionalExpression> m = new ArrayList<ConditionalExpression>(); //statement block
+  Expression e;
+  Block b;
+  ConditionalExpression wb; //werd block
+  Block nwb = null; // NO WAI block
+}{
+    e=parseExp() "?" (<BR>)+
+    "WERD" (<BR>)+ b=parseBlock()
+    {wb = new ConditionalExpression(e, b);}
+    (
+        "MEBBE" e=parseExp() (<BR>)*
+        b=parseBlock()
+        {m.add(new ConditionalExpression(e, b));}
     )*
     (
         "NO" "WAI" (<BR>)*
-        (parseStmt())+
+        nwb=parseBlock()
     )?
     "OIC"
+    {return new ConditionalStatement(wb, m, nwb);}
 }
 
-void parseSwitch(): {
+Statement parseSwitch(): {
+    Expression c;
+    List<ConditionalExpression> omg = new ArrayList<ConditionalExpression>();
+    Expression e;
+    Block b;
+
 }{
-    parseExp() "WTF" "?" (<BR>)+
+    c=parseExp() "WTF" "?" (<BR>)+
     (
-        "OMG" parseLiteral() (<BR>)+ (parseStmt())+
+        "OMG" e=parseLiteral() (<BR>)+ b=parseBlock()
+        {omg.add(new ConditionalExpression(e, b));}
     )+
     "OMGWTF" (<BR>)+
-    (parseStmt())+
+    b=parseBlock()
     "OIC"
+    {return new SwitchStatement(c, omg, b);}
 }
 
-void parseLoop(): {
+Statement parseLoop(): {
+    LoopControlExpression l;
+    String s;
+    Block b;
+    String end;
 }{
-    parseLoopStart() (<BR>)*
-    parseLoopControl() (<BR>)+
-    (LOOKAHEAD(2) parseStmt())+
-    parseLoopEnd()
+    s=parseLoopStart() (<BR>)*
+    l=parseLoopControl() (<BR>)+
+    b=parseBlock()
+    end = parseLoopEnd()
+    {return new LoopStatement(s, l, b, end);}
 }
 
-void parseLoopStart(): {
+String parseLoopStart(): {
+    Token t;
 }{
-    "IM" "IN" "UR" <ID>
+    "IM" "IN" "UR" t=<ID>
+    {return t.image;}
 }
 
-void parseLoopControl(): {
+LoopControlExpression parseLoopControl(): {
+   Expression e;
+   Expression f;
+   Expression t;
+   VariableExpression v;
+   LoopControlExpression l;
+
 }{
-    ("WHIEL" | "TIL") parseExp()
+    (
+    ("WHIEL" | "TIL") e=parseExp()
+    {l = new WhileLoopControl(e);}
     |
     ("UPPIN" | "NERFIN")
-    <ID>
+    v=parseVar()
     (
-        "FROM" parseExp() "TO" parseExp()
+        "FROM" f=parseExp() "TO" t=parseExp()
+        {l = new ForLoopControl(v, f, t);}
     |
-        "THRU" parseExp()
+        "THRU" e=parseExp()
+        {l = new ForLoopControl(v, e);}
     )
+    )
+    {return l;}
 }
 
-void parseLoopEnd(): {
+String parseLoopEnd(): {
+    Token t;
 }{
-    "IM" "OUTTA" "UR" <ID>
+    "IM" "OUTTA" "UR" t=<ID>
+    {return t.image;}
 }
 
-void parseTry(): {
+Statement parseTry(): {
+    Statement s;
+    Block a;
+    Block o;
+
 }{
-    "PLZ" parseSimpleStmt()
+    "PLZ" s=parseSimpleStmt()
     (<BR>)+
     "AWSUM" "THX" (<BR>)+
-    (parseStmt())+
+    a=parseBlock()
     "O" "NOES" (<BR>)+
-    (parseStmt())+
+    o=parseBlock()
     "MKAY"
+    {return new TryStatement(s, a, o);}
 }
 
 Expression parseExp(): {
@@ -489,17 +576,17 @@ VariableExpression parseVar(): {
     (arguments = parseArgs())?
     {
         if (arguments.isEmpty()) {
-            v = new SimpleVariableReference(t.image);
+            v = new SimpleVariableExpression(t.image);
         } else {
             v = new CallExpression(t.image, arguments);
         }
    }
     (
         "!!" e = parseExp() "!!"
-        {v = new ArraySlot(v, e);}
+        {v = new ArraySlotVariableExpression(v, e);}
     |
         "!!!" p = <ID>
-        {v = new BukkitSlot(v, p.image);}
+        {v = new BukkitSlotVariableExpression(v, p.image);}
     )*
     {return v;}
 }
