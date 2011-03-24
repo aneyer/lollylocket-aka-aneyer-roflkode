@@ -1,7 +1,5 @@
 package edu.lmu.cs.xlg.roflkode.entities;
 
-import java.util.List;
-
 public class ForLoopControl extends LoopControlExpression {
 	
     private VariableExpression variable;
