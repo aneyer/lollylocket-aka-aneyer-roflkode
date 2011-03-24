@@ -1,16 +1,14 @@
 package edu.lmu.cs.xlg.roflkode;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.BufferedReader;
+import static org.junit.Assert.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
-
 import org.junit.Test;
+
+
 
 /**
  * A unit test for the front end of the Roflkode compiler. It reads all the ".rk" files in the test
