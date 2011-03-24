@@ -5,11 +5,11 @@ import java.util.List;
 public class CallStatement extends Statement {
 
     private String functionName;
-    private List<Expression> expressions;
+    private List<Expression> arguments;
 
-    public CallStatement(String functionName, List<Expression> expressions) {
+    public CallStatement(String functionName, List<Expression> arguments) {
         this.functionName = functionName;
-        this.expressions = expressions;
+        this.arguments = arguments;
     }
 
     public String getFunctionName() {
@@ -17,6 +17,6 @@ public class CallStatement extends Statement {
     }
 
     public List<Expression> getExpressions() {
-        return expressions;
+        return arguments;
     }
 }
