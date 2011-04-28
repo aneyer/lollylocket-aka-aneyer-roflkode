@@ -1,0 +1,282 @@
+BTW BEGIN SEMANTIC TESTS
+
+BTW Tests assignment semantic.  
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+  I HAS A x    BTW This is good syntax, but x can't be
+               BTW inferred so bad semantics.  
+KTHXBYE
+
+BTW Tests semantics of a BUKKIT constructor
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  TEH BUKKIT UV
+    YARN name
+    INT rating
+  AKA restaurant
+  
+  I HAS A burgerjoint ITZ restaurant <:10 "YUMBURGER" :>    BTW Parameters on constructor
+                                                            BTW must be in order they were
+                                                            BTW declared.  
+
+KTHXBYE
+
+BTW Semantic test for ~~ operator
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+ YO "V" ~~ B00LZOR "W"    BTW W NEEDS TO BE A STRING MORON
+
+KTHXBYE
+
+BTW Test for conditional statement
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  I HAS A b ITZ WIN
+  I HAS A x ITZ 3
+  I HAS A y ITZ 5
+  
+  b ?   
+  WERD
+    YO x
+  MEBBE x PWNS y
+    YO 3
+  MEBBE y    BTW y needs to be a BOOl 
+    YO "WAIT A MINUTE!"
+  OIC
+
+KTHXBYE
+
+
+BTW Semantic test for SAEM AS operator
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+  
+  I HAS A x ITZ 5
+  I HAS A y ITZ 5.4
+  
+  YO x SAEM AS YARNZOR y    BTW TYPE INCOMPATIBLE
+  
+KTHXBYE
+
+BTW Tests the function call in a YO statement
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  I CAN MAEK YARN greet WIF UR YARN s
+    HEREZ UR "GOOOOD MORNING, " ~~ s
+  SRSLY
+
+  YO greet ("VIETNAM!") BTW YOU NEED COLONS MORON!!!
+                        BTW OTHERWISE IT'S TRYING TO YO THE FUNCTION greet
+                        BTW AND THE STRING LITERAL "VIETNAM!"
+KTHXBYE
+
+BTW Tests the function call.
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  I CAN MAEK YARN ball WIF UR YARN sheep AN INT shears
+    HEREZ UR "BAAAA"
+  SRSLY
+
+  YO ball (: 5 "DAVY THE SHEEP" :) BTW WRONG ORDER STUPID!
+
+KTHXBYE
+
+BTW Function declaration semantic error test
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  I CAN doIt
+    BTW Return type is void so HEREZ UR shouldn't be there
+    HEREZ UR "order"
+  SRSLY
+
+KTHXBYE
+
+BTW Function declaration semantic error test
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  I CAN MAEK YARN love WIF UR YARN sweater
+    HEREZ UR 5.1
+    BTW should return a yarn
+  SRSLY
+
+KTHXBYE
+
+BTW Semantic test for indexing an array
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+  
+  I HAS A a ITZ [:'h' 'a' 'h' 'a' 'h' 'a' :]
+  
+  YO a!?"0"?!    BTW This is bad
+  
+KTHXBYE
+
+BTW Tests semantics on loops
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  I HAS A x ITZ 50
+    
+  IM IN UR mind WHIEL x    BTW x needs to be a BOOL
+    YO "ERRONEOUS" 
+  LOL
+
+KTHXBYE
+
+BTW Tests some expressions where precedence matters
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  BTW need parens around y PWNS x
+  YO INTZOR y PWNS x
+
+KTHXBYE
+
+BTW Tests WTF statement semantics
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  I HAS A x ITZ 5
+  
+  x WTF?
+    OMG 5, YO "U HAI RITE NOW?"
+    OMG 3, YO "ST00000P!D"
+    OMG 5, YO "WHAT R U DOOOOOING?"     BTW OMG 5 twice
+    OMGWTF, YO "JUST STOP"
+  OIC
+
+KTHXBYE
+
+
+BTW BEGIN SYNTAX TESTS
+
+
+BTW This file tests the assignment operator.
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+  I HAS INT devil ITZ 666    BTW Error--should be I HAS A INT
+KTHXBYE
+
+BTW Break tests
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI YO "ERROR"
+
+KTHXBYE
+
+BTW Tests the BUKKIT syntax
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  TEH BUKKIT UV
+    YARN john_petrucci
+    YARN john_myung
+    YARN jordan_rudess
+    YARN james_labrie
+  AKA dream_theater    BTW where's Mike Portnoy???
+
+  I HAS A band ITZ dream_theater    BTW ERROR--forgot BUKKIT LITERAL
+
+KTHXBYE
+
+BTW Tests that HAI has to be uppercase.
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+hai BTW ERROR
+
+  YO "wtf is going on?"
+
+KTHXBYE
+
+BTW Tests the syntax of a function
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  THEM CAN MAEK YARN teeheehee WIF UR INT huh
+
+    YO "DIE!!!!!!!!!"    BTW Error here--THEM CAN MAEK functions shouldn't be implemented
+
+  SRSLY
+
+KTHXBYE
+
+BTW Another function test
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  I CAN MAEK magic WIF UR YARN life  BTW ERROR
+    YO "jk"
+  SRSLY
+
+KTHXBYE
+
+BTW Tests import syntax
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  CAN HAS yournumber   BTW NO!!! NO '?' !
+
+KTHXBYE
+
+BTW Tests the loop syntax
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  I HAS A NUMBR LIST v ITZ [ 3 1.0 8 2 ]  BTW MISSING COLONS!!!! ERRRRRORRRR
+
+KTHXBYE
+
+
+
+BTW Tests loop syntax.  
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+  IM IN UR pnts UPPIN i FROM 0 TO 100   BTW AAAAW SNAP
+  
+    YO "^see what I did there?"
+    
+    IM IN UR loopzor WHILE WIN    BTW This fails--WHILE is spell correctly
+      YO "Nothin"                 BTW thus its incorrect.
+    LOL
+  
+  LOL    BTW Indeed.
+
+KTHXBYE
+
+BTW Tests spaces.
+BTW Authors: Anthony Khayat, David Kikuta, Allison Neyer
+
+HAI
+
+
+  YO "SUP"
+  
+K THXBYE   BTW ERROR
