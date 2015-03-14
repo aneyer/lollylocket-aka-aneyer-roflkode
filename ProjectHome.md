@@ -1,0 +1,1 @@
+This project is for LMU's compiler's class. The language is roughly based off of LOL code
